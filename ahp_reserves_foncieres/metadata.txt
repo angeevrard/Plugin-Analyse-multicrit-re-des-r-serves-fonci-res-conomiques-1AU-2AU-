@@ -1,0 +1,20 @@
+[general]
+name=AHP Réserves foncières
+qgisMinimumVersion=3.28
+description=Automatisation de l'analyse multicritère hiérarchique (AHP) du potentiel de mobilisation des réserves foncières économiques.
+version=0.1
+author=Ange SERY
+email=angeevrardsery18@gmail.com.com
+
+about=Plugin développé dans le cadre de mon mémoire de fin d'études (Master 2 Observation de la Terre et Géomatique). Il permet d'automatiser, au sein de QGIS, l'évaluation multicritère du potentiel de mobilisation de réserves foncières économiques : association des champs, standardisation des critères, pondération par comparaisons par paires, calcul du score final et export des résultats.
+
+tracker=
+repository=
+category=Vector
+tags=AHP, SAW, multicritère, analyse multicritère hiérarchique, foncier, aménagement, réserves foncières, Saaty
+
+homepage=
+icon=icon.png
+experimental=True
+deprecated=False
+server=False
