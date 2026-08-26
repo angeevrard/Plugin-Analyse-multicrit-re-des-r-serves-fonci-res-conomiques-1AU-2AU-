@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Fenêtre principale du plugin AHP Réserves foncières.
-
-Organise les cinq étapes de l'analyse (couche d'entrée, association des
-champs, standardisation, Comparaison des critères par paires, résultats
-et export).
-
+Fenêtre principale du plugin.
 """
 import os.path
 
@@ -32,7 +27,6 @@ STEP_TITLES = [
 
 
 class AhpDialog(QDialog):
-    """Fenêtre principale, non modale, du plugin."""
 
     closed = pyqtSignal()
 
@@ -128,18 +122,13 @@ class AhpDialog(QDialog):
     # ------------------------------------------------------------------
     def _go_to_step(self, index):
         if index == 1:
-            # L'auto-détection n'est relancée que si la couche a changé
-            # depuis la dernière visite (cf. AssociationChampsTab.set_context) :
-            # les corrections manuelles ne sont donc pas perdues lors d'un
-            # simple aller-retour entre étapes.
+
             self.tab_association.set_context(
                 self.tab_couche_entree.current_layer(),
                 self.tab_couche_entree.current_id_field(),
             )
         elif index == 2:
-            # Référence partagée vers les mêmes objets FamilleCriteres que
-            # l'onglet 2 : les barèmes définis ici restent visibles tant
-            # qu'on ne change pas de couche à l'étape 1.
+
             self.tab_standardisation.set_context(
                 self.tab_association.familles(),
                 self.tab_couche_entree.current_layer(),
@@ -196,7 +185,6 @@ class AhpDialog(QDialog):
             valid = True
 
         if derniere_etape:
-            # Il n'y a pas d'étape suivante : le bouton ferme le plugin.
             self.btn_next.setText("Fermer")
             self.btn_next.setEnabled(True)
         else:
