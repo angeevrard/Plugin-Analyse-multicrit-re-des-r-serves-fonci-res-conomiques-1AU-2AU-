@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Étape 3 : Standardisation.
+Standardisation.
 
 """
 from qgis.PyQt.QtCore import Qt, pyqtSignal
@@ -23,7 +23,7 @@ class StandardisationTab(QWidget):
         super().__init__(parent)
         self.setObjectName("ContentPage")
 
-        self._familles = []       # référence partagée avec AssociationChampsTab
+        self._familles = []      
         self._layer = None
         self._current_sc = None
         self._editing = False
@@ -56,7 +56,7 @@ class StandardisationTab(QWidget):
         body.setSpacing(16)
         root.addLayout(body, stretch=1)
 
-        # --- Colonne gauche : liste des sous-critères -------------------
+      
         grp_liste = QGroupBox("Sous-critères")
         grp_liste.setFixedWidth(280)
         liste_layout = QVBoxLayout(grp_liste)
@@ -68,7 +68,7 @@ class StandardisationTab(QWidget):
 
         body.addWidget(grp_liste)
 
-        # --- Colonne droite ----------------------------------------------
+       
         right = QVBoxLayout()
         right.setSpacing(14)
 
@@ -113,7 +113,7 @@ class StandardisationTab(QWidget):
 
         right.addWidget(self.grp_correspondance, stretch=1)
 
-        # --- Bas : échelle de référence (pleine largeur, sans scrollbar) --
+        
         grp_echelle = QGroupBox("Échelle de standardisation")
         echelle_layout = QVBoxLayout(grp_echelle)
         self.table_echelle = QTableWidget()
@@ -172,9 +172,7 @@ class StandardisationTab(QWidget):
     def _sous_criteres_avec_champ(self):
         return [sc for _, sc in tous_les_sous_criteres(self._familles) if sc.champ]
 
-    # ------------------------------------------------------------------
-    # Arbre des sous-critères
-    # ------------------------------------------------------------------
+  
     def _build_tree(self):
         self.tree.blockSignals(True)
         self.tree.clear()
@@ -229,9 +227,7 @@ class StandardisationTab(QWidget):
         self.btn_add_row.setEnabled(actif and self._editing)
         self.btn_remove_row.setEnabled(actif and self._editing)
 
-    # ------------------------------------------------------------------
-    # Table de correspondance (barème) du sous-critère courant
-    # ------------------------------------------------------------------
+
     def _populate_bareme_table(self):
         sc = self._current_sc
         self.table_bareme.setRowCount(len(sc.bareme) if sc else 0)
@@ -292,9 +288,7 @@ class StandardisationTab(QWidget):
         libelle = self._current_sc.nom if self._bareme_valide(self._current_sc) else f"⚠ {self._current_sc.nom}"
         item.setText(0, libelle)
 
-    # ------------------------------------------------------------------
-    # Actions
-    # ------------------------------------------------------------------
+
     def _on_toggle_edit(self):
         if self._current_sc is None:
             return
@@ -364,15 +358,11 @@ class StandardisationTab(QWidget):
         else:
             self.lbl_feedback.setText("Aucune valeur nouvelle détectée dans la couche.")
 
-    # ------------------------------------------------------------------
-    # Utilitaires
-    # ------------------------------------------------------------------
+
     def _format_score(self, score):
         return f"{score:.2f}".replace(".", ",")
 
-    # ------------------------------------------------------------------
-    # Accesseurs utilisés par le reste du plugin
-    # ------------------------------------------------------------------
+
     def is_valid(self):
         if self._editing:
             self._commit_valeur_edits()
