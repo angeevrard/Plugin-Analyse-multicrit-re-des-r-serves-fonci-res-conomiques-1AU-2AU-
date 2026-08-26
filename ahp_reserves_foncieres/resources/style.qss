@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Plugin AHP Réserves foncières - feuille de style
+  feuille de style du plugin
    ========================================================================== */
 
 QDialog#AhpDialog {
