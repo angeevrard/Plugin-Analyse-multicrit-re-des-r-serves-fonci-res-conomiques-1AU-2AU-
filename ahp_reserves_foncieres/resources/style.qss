@@ -1,7 +1,5 @@
 /* ==========================================================================
    Plugin AHP Réserves foncières - feuille de style
-   Palette sobre alignée sur le thème QGIS par défaut, badges numérotés
-   pour la navigation par étapes.
    ========================================================================== */
 
 QDialog#AhpDialog {
@@ -147,7 +145,7 @@ QPushButton#SecondaryButton:checked {
     border-color: #2f6fed;
 }
 
-/* --- Barre de navigation basse ----------------------------------------- */
+/* --- Barre de navigation ----------------------------------------- */
 
 QFrame#NavBar {
     background-color: #ffffff;
