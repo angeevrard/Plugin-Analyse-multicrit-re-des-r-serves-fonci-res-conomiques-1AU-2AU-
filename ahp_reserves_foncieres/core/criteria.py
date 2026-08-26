@@ -8,10 +8,10 @@ from .ahp import matrice_vide
 @dataclass
 class SousCritere:
 
-    champ: str                                # nom du champ de la couche (identité du sous-critère)
-    famille: str = ""                          # nom de la famille, texte libre saisi par l'utilisateur
-    bareme: List[Tuple[str, float]] = field(default_factory=list)  # (valeur brute, score 0-1)
-    poids_local: float = 0.0                  # poids au sein de sa famille
+    champ: str                                # nom du champ des sous-critères
+    famille: str = ""                          # nom de la famille de critères, texte libre saisi par l'utilisateur
+    bareme: List[Tuple[str, float]] = field(default_factory=list)  # (Standardisation des valeurs brutes des sous-critères)
+    poids_local: float = 0.0                  # poids du sous-critères au sein de sa famille de critères
     poids_global: float = 0.0                 # poids_local x poids de la famille 
 
     @property
@@ -24,20 +24,20 @@ class SousCritere:
 
     @property
     def champ_standardise(self) -> str:
-        """Nom du champ qui portera la valeur d'aptitude standardisée de ce sous-critère
-        (préfixe 'std_' devant le nom du champ source)."""
+        """Nom du champ qui portera la valeur standardisée des observations des sous-critères
+        (préfixe 'std_' devant le nom du champ source)"""
         return f"std_{self.champ}"
 
 
 @dataclass
 class FamilleCriteres:
-    """Un regroupement de sous-critères sous un nom de famille commun (texte
-    libre saisi par l'utilisateur."""
+    """Regroupement de sous-critères sous un nom de famille commun (texte
+    libre saisi par l'utilisateur"""
 
     nom: str
     sous_criteres: List[SousCritere] = field(default_factory=list)
-    matrice_ponderation: List[List[float]] = field(default_factory=list)  # comparaison de ses sous-critères
-    poids: float = 0.0                        # poids de la famille parmi les autres (étape 4)
+    matrice_ponderation: List[List[float]] = field(default_factory=list)  
+    poids: float = 0.0                        # poids de la famille de critères
 
     @property
     def id(self) -> str:
@@ -79,74 +79,7 @@ def regrouper_par_famille(
     return resultat
 
 
-BAREMES_PAR_DEFAUT = {
-    "position_armature": [
-        ("Ville centre et cœur métropolitain", 1.0),
-        ("Polarités", 0.75),
-        ("Hors polarités (villages)", 0.50),
-    ],
-    "acess_echangeur": [
-        ("Moins de 10 minutes", 1.0),
-        ("Entre 10 et 20 minutes", 0.75),
-        ("Plus de 20 minutes", 0.50),
-    ],
-    "acess_tc": [
-        ("Moins de 5 minutes", 1.0),
-        ("Entre 5 et 10 minutes", 0.75),
-        ("Plus de 10 minutes", 0.50),
-    ],
-    "articu_piste_cyclable": [
-        ("Accès direct", 1.0),
-        ("Accès indirect", 0.75),
-        ("Absence (dans un rayon de 500 m)", 0.25),
-    ],
-    "acess_restauration": [
-        ("Moins de 5 minutes", 1.0),
-        ("Entre 5 et 10 minutes", 0.75),
-        ("Plus de 10 minutes", 0.50),
-    ],
-    "acess_aep": [
-        ("Moins de 100 m", 1.0),
-        ("Plus de 100 m", 0.50),
-    ],
-    "proximite_res_elect": [
-        ("Moins de 400 m", 1.0),
-        ("Plus de 400 m", 0.50),
-    ],
-    "articu_zae_existante": [
-        ("Contiguë ou à proximité immédiate (< 500 m)", 1.0),
-        ("Plus de 500 m", 0.50),
-    ],
-    "enjeux_forestier": [
-        ("Absence d'espace boisé", 1.0),
-        ("Présence d'espace boisé", 0.25),
-    ],
-    "expo_risq_inondation": [
-        ("Hors zone inondable", 1.0),
-        ("Dans une zone inondable", 0.25),
-    ],
-    "expo_risque_mvt_terr": [
-        ("Hors zone de risque", 1.0),
-        ("Dans une zone de risque", 0.25),
-    ],
-    "zone_hum_res_bio": [
-        ("Hors zone humide / réservoir de biodiversité", 1.0),
-        ("Dans une zone humide ou un réservoir de biodiversité", 0.25),
-    ],
-    "pente_moy_terrain": [
-        ("Inférieure ou égale à 10 %", 1.0),
-        ("Entre 10 % et 20 %", 0.75),
-        ("Supérieure à 20 %", 0.25),
-    ],
-    "maitrise_fonciere": [
-        ("Entièrement maîtrisée par l'entité publique", 1.0),
-        ("Maîtrise mixte (publique et privée)", 0.75),
-        ("Entièrement détenue par des propriétaires privés", 0.50),
-    ],
-}
-
-
-# Échelle générale de standardisation : sert de
+# Échelle numérique pour la standardisation des sous-critères: sert de
 # légende de référence dans l'étape "Standardisation".
 ECHELLE_STANDARDISATION: List[Tuple[str, float]] = [
     ("Impossible (aptitude nulle)", 0.0),
@@ -155,32 +88,6 @@ ECHELLE_STANDARDISATION: List[Tuple[str, float]] = [
     ("Favorable", 0.75),
     ("Très favorable", 1.0),
 ]
-
-_REFERENCE_MEMOIRE = [
-    ("Attractivité géographique", [
-        ("position_armature", ["armature", "position"]),
-        ("acess_echangeur", ["echangeur", "autorout"]),
-        ("acess_tc", ["tc", "transport", "gare", "bus"]),
-        ("articu_piste_cyclable", ["cyclable", "cycl", "piste"]),
-        ("acess_restauration", ["restaur", "alimentaire", "commerce"]),
-    ]),
-    ("Aptitude aux réseaux techniques et à la mutualisation", [
-        ("acess_aep", ["aep", "eau_potable", "assainissement"]),
-        ("proximite_res_elect", ["elect", "electr"]),
-        ("articu_zae_existante", ["zae"]),
-    ]),
-    ("Enjeux forestiers, écologiques et de risques naturels", [
-        ("enjeux_forestier", ["forest", "bois"]),
-        ("zone_hum_res_bio", ["humide", "biodiv", "znieff", "ecolog"]),
-        ("expo_risq_inondation", ["inond"]),
-        ("expo_risque_mvt_terr", ["mvt_terr", "mouvement", "argile", "glissement"]),
-    ]),
-    ("Aptitude physique et foncière", [
-        ("pente_moy_terrain", ["pente"]),
-        ("maitrise_fonciere", ["maitrise", "foncier"]),
-    ]),
-]
-
 
 def _normalize_mot(texte: str) -> str:
     texte = texte.lower()
