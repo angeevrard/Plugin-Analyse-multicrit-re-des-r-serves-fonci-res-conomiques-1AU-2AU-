@@ -1,14 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 Barre latérale indiquant la progression dans les étapes du plugin (couche
-d'entrée, association des champs, standardisation, pondération AHP,
+d'entrée, association des champs, standardisation, pondération des critères,
 résultats, export). Chaque étape est représentée par un badge numéroté ;
 le badge passe au vert lorsque l'étape est considérée comme complète.
-
-la navigation entre étapes se fait uniquement via
-les boutons "Précédent" / "Suivant" de la fenêtre principale, pour éviter
-qu'on ne saute une étape sans que sa validité ait été vérifiée.
-
 """
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame
