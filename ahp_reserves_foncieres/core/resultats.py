@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 """
 Agrégation des critères et calcul du score final de chaque réserve
-foncière (section 3.1 du mémoire, formules Mf et S) :
-
+foncière
 """
 from typing import Dict, List, Optional, Tuple
 
-# Classes d'aptitude selon le score final S (bornes [min, max[, sauf la
-# dernière classe dont la borne haute est incluse : S = 1 exactement).
+# Classes de catégorisation des réserves foncière selon selon le score final (bornes [min, max[)
 CLASSES_APTITUDE: List[Tuple[float, float, str]] = [
     (0.0, 1 / 3, "Potentiel faible"),
     (1 / 3, 2 / 3, "Potentiel modéré"),
@@ -63,11 +61,9 @@ def classer_score(score_final: Optional[float]) -> str:
 
 
 def calculer_resultats(familles, layer, id_field: str) -> List[dict]:
-    """Calcule, pour chaque entité de la couche, le score de chaque
-    famille, le score final, la classe d'aptitude et le rang (1 = meilleur
-    score). Les réserves au score indéfini n'ont pas de rang. Retourne une
-    liste de dictionnaires triée par rang croissant (meilleures réserves
-    en premier)."""
+    """Calcule, pour chaque réserve foncière, le score de chaque
+    famille, le score final, sa classification et le rang"""
+    
     tous_sc = [sc for famille in familles for sc in famille.sous_criteres]
 
     resultats = []
