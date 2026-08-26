@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Étape 1 : Couche d'entrée.
+Couche d'entrée.
 
 Permet de sélectionner la couche vectorielle des réserves foncières sur
-laquelle portera l'ensemble de l'analyse AHP, d'identifier son champ
+laquelle portera l'ensemble de l'analyse, d'identifier son champ
 identifiant unique, et de définir le fichier GeoPackage de sortie qui
-recevra la copie enrichie des résultats (créée aux étapes suivantes).
+recevra la copie enrichie des résultats
 """
 from qgis.core import QgsMapLayerProxyModel
 from qgis.gui import QgsMapLayerComboBox, QgsFieldComboBox, QgsFileWidget
@@ -19,8 +19,6 @@ from qgis.PyQt.QtWidgets import (
 
 class CoucheEntreeTab(QWidget):
 
-    # Émis à chaque changement susceptible de modifier la validité de l'étape
-    # (changement de couche, de champ identifiant ou de fichier de sortie).
     configChanged = pyqtSignal()
 
     NB_LIGNES_APERCU = 4
@@ -119,9 +117,6 @@ class CoucheEntreeTab(QWidget):
         self.chk_copie.toggled.connect(lambda *_: self.configChanged.emit())
         self.file_output.fileChanged.connect(lambda *_: self.configChanged.emit())
 
-    # ------------------------------------------------------------------
-    # Réaction au changement de couche
-    # ------------------------------------------------------------------
     def _on_layer_changed(self, layer):
         self.cb_field_id.setLayer(layer)
 
@@ -168,9 +163,7 @@ class CoucheEntreeTab(QWidget):
                 text = "" if value is None else str(value)
                 self.table_preview.setItem(row, col, QTableWidgetItem(text))
 
-    # ------------------------------------------------------------------
-    # Accesseurs utilisés par le reste du plugin
-    # ------------------------------------------------------------------
+
     def current_layer(self):
         return self.cb_layer.currentLayer()
 
