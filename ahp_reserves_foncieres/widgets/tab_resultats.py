@@ -1,12 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Étape 5 : Résultats et Export.
-
-Calcule, pour chaque réserve foncière de la couche, le score intermédiaire
-de chaque famille (Mf), le score final (S), la classe de potentiel de
-mobilisation et le rang (1 = potentiel le plus élevé), puis permet
-d'exporter ce tableau. Toutes les formules sont implémentées dans
-core/resultats.py ; ce module s'occupe de leur présentation.
+Résultats et Export.
 """
 from qgis.PyQt.QtCore import Qt, pyqtSignal
 from qgis.PyQt.QtGui import QColor
@@ -30,7 +24,6 @@ COULEURS_CLASSE = {
 
 
 class ResultatsTab(QWidget):
-    """Page 5 (finale) de l'assistant : résultats et export."""
 
     configChanged = pyqtSignal()
 
@@ -92,7 +85,7 @@ class ResultatsTab(QWidget):
         legende_layout.addStretch()
         body.addWidget(grp_legende, stretch=0)
 
-        # --- Action de fin de parcours : export ---------------------------
+
         actions = QHBoxLayout()
         self.btn_exporter = QPushButton("Exporter la couche enrichie (.gpkg)")
         self.btn_exporter.setObjectName("PrimaryButton")
@@ -139,15 +132,13 @@ class ResultatsTab(QWidget):
         table.resizeRowsToContents()
         hauteur = table.horizontalHeader().height() + 4
         for row in range(table.rowCount()):
-            hauteur_ligne = table.rowHeight(row) + 22   # marge supplémentaire : lignes bien plus visibles
+            hauteur_ligne = table.rowHeight(row) + 22  
             table.setRowHeight(row, hauteur_ligne)
             hauteur += hauteur_ligne
         table.setFixedHeight(hauteur)
         return table
 
-    # ------------------------------------------------------------------
-    # Contexte fourni par les étapes précédentes
-    # ------------------------------------------------------------------
+
     def set_context(self, familles, layer, id_field, output_path="", create_enriched_copy=True):
         self._familles = familles
         self._layer = layer
@@ -249,9 +240,7 @@ class ResultatsTab(QWidget):
         else:
             QMessageBox.warning(self, "Export impossible", message)
 
-    # ------------------------------------------------------------------
-    # Utilitaires
-    # ------------------------------------------------------------------
+
     def _ro_item(self, texte, centre=False):
         item = QTableWidgetItem(texte)
         item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
@@ -262,8 +251,5 @@ class ResultatsTab(QWidget):
     def _format_decimal(self, valeur):
         return f"{valeur:.3f}".replace(".", ",")
 
-    # ------------------------------------------------------------------
-    # Accesseurs utilisés par le reste du plugin
-    # ------------------------------------------------------------------
     def is_valid(self):
         return bool(self._resultats)
