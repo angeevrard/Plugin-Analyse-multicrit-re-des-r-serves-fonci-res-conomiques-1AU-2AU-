@@ -5,9 +5,6 @@ Widget de saisie d'une matrice de comparaison par paires.
 Seule la partie supérieure est éditable : l'utilisateur y
 tape directement une valeur (ex. '3', '0.333' ou '1/3'). Le programme
 remplit automatiquement :
-  - la diagonale, toujours égale à 1 (jamais à saisir) ;
-  - le terme symétrique a_ji = 1 / a_ij, dès que a_ij est renseigné.
-
 """
 import re
 
@@ -16,7 +13,7 @@ from qgis.PyQt.QtGui import QColor, QFontMetrics
 from qgis.PyQt.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView
 
 COULEUR_DIAGONALE = QColor("#eef0f3")
-LARGEUR_MAX_LIGNE_ENTETE = 13   # caractères, avant retour à la ligne d'un libellé
+LARGEUR_MAX_LIGNE_ENTETE = 13   
 
 
 def formater_valeur(valeur) -> str:
@@ -32,7 +29,7 @@ def formater_valeur(valeur) -> str:
 
 def parser_valeur(texte: str):
     """Convertit une saisie utilisateur ('3', '0.333', '1/3', '1,5') en
-    nombre strictement positif, ou None si la saisie n'est pas valide."""
+    nombre strictement positif, ou Non si la saisie n'est pas valide."""
     texte = texte.strip().replace(",", ".")
     if not texte:
         return None
@@ -119,9 +116,6 @@ class MatriceComparaisonWidget(QTableWidget):
         self.blockSignals(False)
         self._appliquer_dimensions()
 
-    # ------------------------------------------------------------------
-    # Dimensionnement : recalculé à chaque rendu et à chaque redimensionnement
-    # ------------------------------------------------------------------
     def resizeEvent(self, event):
         super().resizeEvent(event)
         if self._labels:
@@ -135,10 +129,7 @@ class MatriceComparaisonWidget(QTableWidget):
         fm = QFontMetrics(self.font())
         hauteur_ligne_texte = fm.height() + 4
 
-        # Besoin minimal de chaque libellé (déjà réparti sur plusieurs
-        # lignes) pour n'être jamais tronqué. Cette valeur n'est ensuite
-        # JAMAIS réduite, quelle que soit la place disponible : mieux vaut
-        # une case un peu plus grande qu'un nom coupé.
+
         largeur_necessaire = []
         hauteur_necessaire = []
         for lbl in self._libelles:
@@ -146,24 +137,17 @@ class MatriceComparaisonWidget(QTableWidget):
             largeur_necessaire.append(max(fm.horizontalAdvance(l) for l in lignes) + 18)
             hauteur_necessaire.append(len(lignes) * hauteur_ligne_texte + 8)
 
-        # --- En-tête vertical (largeur unique) et en-tête horizontal
-        # (hauteur unique), dimensionnés pour le libellé le plus exigeant,
-        # sans plafond qui risquerait de tronquer le plus long des noms.
         largeur_entete_v = max(largeur_necessaire)
         self.verticalHeader().setFixedWidth(largeur_entete_v)
 
         hauteur_entete_h = max(hauteur_necessaire)
         self.horizontalHeader().setFixedHeight(hauteur_entete_h)
 
-        # --- Largeur des colonnes : le nécessaire de chacune, complété par
-        # l'espace disponible dans le widget (réparti également) pour que
-        # la matrice occupe toute la largeur plutôt que de laisser du vide.
         largeur_dispo = max(self.width() - largeur_entete_v - 6, sum(largeur_necessaire))
         extra_largeur = largeur_dispo - sum(largeur_necessaire)
         for j in range(n):
             self.setColumnWidth(j, largeur_necessaire[j] + extra_largeur // n)
 
-        # --- Hauteur des lignes : même principe, verticalement.
         hauteur_dispo = max(self.height() - hauteur_entete_h - 6, sum(hauteur_necessaire))
         extra_hauteur = hauteur_dispo - sum(hauteur_necessaire)
         for i in range(n):
@@ -173,7 +157,7 @@ class MatriceComparaisonWidget(QTableWidget):
     def _on_item_changed(self, item):
         i, j = item.row(), item.column()
         if i >= j:
-            return  # cellule non éditable en principe ; sécurité
+            return 
 
         valeur = parser_valeur(item.text())
         if valeur is None:
