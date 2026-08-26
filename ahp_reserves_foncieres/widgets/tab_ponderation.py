@@ -13,7 +13,7 @@ CLE_FAMILLES = ("__familles__",)
 
 
 class PonderationTab(QWidget):
-    """Etape 4  : Comparaison des critères par paires (matrice de Saaty)."""
+    """Comparaison des critères par paires (matrice de Saaty)."""
 
     configChanged = pyqtSignal()
 
@@ -21,12 +21,12 @@ class PonderationTab(QWidget):
         super().__init__(parent)
         self.setObjectName("ContentPage")
 
-        self._familles = []          # dernier regroupement reçu (reconstruit à chaque appel de familles())
-        self._matrice_familles = []  # comparaison des familles entre elles
-        self._matrices_par_composition = {}  # composition -> matrice (persiste tant que la composition ne change pas)
-        self._rc = {}       # composition -> dernier RC calculé (peut être > 10 %)
-        self._agrege = {}   # composition -> True si l'agrégation a été validée pour cette matrice
-        self._vue = "sous_criteres"  # "sous_criteres" ou "familles"
+        self._familles = []         
+        self._matrice_familles = []  
+        self._matrices_par_composition = {} 
+        self._rc = {}       
+        self._agrege = {}   
+        self._vue = "sous_criteres"  
 
         self._build_ui()
         self._connect_signals()
@@ -62,7 +62,6 @@ class PonderationTab(QWidget):
         left = QVBoxLayout()
         left.setSpacing(10)
 
-        # --- Sélecteur de vue --------------------------------------------
         selecteur = QHBoxLayout()
         self.btn_view_sc = QPushButton("Sous-critères")
         self.btn_view_familles = QPushButton("Familles de critères")
@@ -86,20 +85,20 @@ class PonderationTab(QWidget):
         selecteur.addWidget(self.cb_famille)
         left.addLayout(selecteur)
 
-        # --- Matrice de comparaison : occupe tout l'espace restant --------
+
         self.grp_matrice = QGroupBox("Matrice de comparaison")
         matrice_layout = QVBoxLayout(self.grp_matrice)
         self.matrix_widget = MatriceComparaisonWidget()
         matrice_layout.addWidget(self.matrix_widget)
         left.addWidget(self.grp_matrice, stretch=1)
 
-        # --- Message d'erreur de saisie ------------------------------------
+
         self.lbl_erreur = QLabel("")
         self.lbl_erreur.setStyleSheet("color: #b23a3a;")
         self.lbl_erreur.setWordWrap(True)
         left.addWidget(self.lbl_erreur)
 
-        # --- Ratio de cohérence, puis les deux boutons d'action ------------
+
         self.lbl_rc = QLabel("")
         self.lbl_rc.setWordWrap(True)
         left.addWidget(self.lbl_rc)
@@ -121,7 +120,7 @@ class PonderationTab(QWidget):
         right = QVBoxLayout()
         right.setSpacing(12)
 
-        # --- Tableau de poids contextuel (sous-critères OU familles) -----
+
         self.grp_poids = QGroupBox("Poids des sous-critères")
         poids_layout = QVBoxLayout(self.grp_poids)
         self.table_poids = QTableWidget()
@@ -137,7 +136,7 @@ class PonderationTab(QWidget):
         poids_layout.addWidget(self.table_poids)
         right.addWidget(self.grp_poids)
 
-        # --- Échelle de Saaty (référence fixe), pleine largeur --------------
+
         grp_echelle = QGroupBox("Échelle de comparaison par paires (Saaty, 1980)")
         echelle_layout = QVBoxLayout(grp_echelle)
         self.table_echelle = EchelleSaatyWidget()
@@ -155,9 +154,7 @@ class PonderationTab(QWidget):
         self.btn_calculer_coherence.clicked.connect(self._on_calculer_coherence_clicked)
         self.btn_agreger.clicked.connect(self._on_agreger_clicked)
 
-    # ------------------------------------------------------------------
-    # Contexte fourni par les étapes précédentes
-    # ------------------------------------------------------------------
+
     def set_context(self, familles):
         self._familles = familles
 
@@ -218,7 +215,7 @@ class PonderationTab(QWidget):
         return self._familles[0] if self._familles else None
 
     # ------------------------------------------------------------------
-    # Calcul des Poids (en direct)
+    # Calcul des Poids 
     # ------------------------------------------------------------------
     def _recalculer_poids_famille(self, famille):
         poids, _, _ = ponderer_et_calculer(famille.matrice_ponderation)
@@ -251,9 +248,7 @@ class PonderationTab(QWidget):
         if not tous_agreges and self._vue == "familles":
             self.btn_view_sc.setChecked(True)
 
-    # ------------------------------------------------------------------
-    # Affichage de la vue courante (matrice + poids + RC)
-    # ------------------------------------------------------------------
+
     def _on_view_toggled(self, checked):
         if not checked:
             return
@@ -294,7 +289,7 @@ class PonderationTab(QWidget):
         cle = self._cle_courante()
         matrice = self._matrice_courante()
         if cle is None or matrice is None or not matrice_complete(matrice):
-            return  # le bouton est normalement désactivé dans ce cas ; sécurité
+            return  
 
         if self._vue == "familles":
             self._recalculer_poids_entre_familles()
@@ -314,7 +309,7 @@ class PonderationTab(QWidget):
         cle = self._cle_courante()
         rc = self._rc.get(cle)
         if cle is None or rc is None or not coherence_acceptable(rc):
-            return  # le bouton est normalement désactivé dans ce cas ; sécurité
+            return 
 
         self._agrege[cle] = True
         self._mettre_a_jour_disponibilite_familles()
@@ -416,9 +411,7 @@ class PonderationTab(QWidget):
             f"{symbole}&nbsp;&nbsp;Ratio de cohérence (RC) : {rc * 100:.1f} % — {texte}{suffixe}</span>"
         )
 
-    # ------------------------------------------------------------------
-    # Utilitaires
-    # ------------------------------------------------------------------
+
     def _ro_item(self, texte):
         item = QTableWidgetItem(texte)
         item.setFlags(Qt.ItemIsEnabled)
@@ -427,9 +420,7 @@ class PonderationTab(QWidget):
     def _format_decimal(self, valeur):
         return f"{valeur:.3f}".replace(".", ",")
 
-    # ------------------------------------------------------------------
-    # Accesseurs utilisés par le reste du plugin
-    # ------------------------------------------------------------------
+
     def familles(self):
         return self._familles
 
