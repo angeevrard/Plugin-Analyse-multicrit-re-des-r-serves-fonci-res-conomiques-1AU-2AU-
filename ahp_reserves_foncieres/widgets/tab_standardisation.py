@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Standardisation.
+Standardisation des critères
 
 """
 from qgis.PyQt.QtCore import Qt, pyqtSignal
