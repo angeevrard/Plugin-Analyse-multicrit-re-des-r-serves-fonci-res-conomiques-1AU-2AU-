@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Étape 2 : Association des champs.
+Association des champs.
 
 Chaque champ de la couche des réserves foncières (à l'exception du champ
 identifiant défini à l'étape 1) devient un sous-critère candidat de
 l'analyse. L'utilisateur lui attribue une famille de critères en texte
-libre : deux champs recevant le même nom de famille seront regroupés et
+libre : des critères recevant le même nom de famille seront regroupés et
 comparés entre eux à l'étape "Comparaison par paire des critères". Un champ dont la famille
 reste vide est simplement exclu de l'analyse.
 
@@ -31,16 +31,13 @@ class AssociationChampsTab(QWidget):
 
         self._layer = None
         self._id_field = ""
-        self._sous_criteres = []   # liste plate : un SousCritere par champ éligible
+        self._sous_criteres = []  
 
         self._build_ui()
         self._connect_signals()
         self._populate_table()
         self._refresh_controls()
 
-    # ------------------------------------------------------------------
-    # Construction de l'interface
-    # ------------------------------------------------------------------
     def _build_ui(self):
         root = QVBoxLayout(self)
         root.setContentsMargins(24, 20, 24, 16)
@@ -59,7 +56,6 @@ class AssociationChampsTab(QWidget):
         body.setSpacing(16)
         root.addLayout(body, stretch=1)
 
-        # --- Colonne gauche : table -------------------------------------
         left = QVBoxLayout()
         left.setSpacing(8)
 
@@ -91,7 +87,6 @@ class AssociationChampsTab(QWidget):
 
         body.addLayout(left, stretch=3)
 
-        # --- Colonne droite : contrôle des données ----------------------
         grp_controle = QGroupBox("Contrôle des données")
         grp_controle.setFixedWidth(260)
         controle_layout = QVBoxLayout(grp_controle)
@@ -142,9 +137,6 @@ class AssociationChampsTab(QWidget):
             sous_criteres.append(SousCritere(champ=nom_champ, famille=famille_suggeree, bareme=[]))
         return sous_criteres
 
-    # ------------------------------------------------------------------
-    # Table
-    # ------------------------------------------------------------------
     def _populate_table(self):
         self.table.blockSignals(True)
         self.table.setRowCount(len(self._sous_criteres))
@@ -181,9 +173,7 @@ class AssociationChampsTab(QWidget):
         assignes = sum(1 for sc in self._sous_criteres if sc.famille.strip())
         self.lbl_feedback.setText(f"{assignes}/{total} sous-critères catégorisés")
 
-    # ------------------------------------------------------------------
-    # Contrôle des données
-    # ------------------------------------------------------------------
+
     def _refresh_controls(self):
         if self._layer is None:
             for lbl in (self.lbl_check_ids, self.lbl_check_geom, self.lbl_check_missing):
@@ -242,9 +232,6 @@ class AssociationChampsTab(QWidget):
             symbole, couleur = "⚠", "#d68a1f"
         label.setText(f'<span style="color:{couleur}; font-weight:600;">{symbole}</span>&nbsp;&nbsp;{text}')
 
-    # ------------------------------------------------------------------
-    # Utilitaires d'affichage
-    # ------------------------------------------------------------------
     def _ro_item(self, text):
         item = QTableWidgetItem(text)
         item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable)
