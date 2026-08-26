@@ -30,24 +30,17 @@ SEUIL_RC_ACCEPTABLE = 0.10
 
 
 def matrice_identite(n: int) -> Matrice:
-    """Matrice de comparaison neutre : les n éléments sont jugés d'égale
-    importance. Conservée pour les tests / usages ponctuels ; l'interface
-    utilise matrice_vide() comme point de départ (cf. ci-dessous)."""
     return [[1.0 for _ in range(n)] for _ in range(n)]
 
 
 def matrice_vide(n: int) -> Matrice:
     """Matrice de comparaison non renseignée : diagonale à 1 (fixe), toutes
-    les autres cases à 0. Cette valeur 0 est une convention d'interface
-    signalant une comparaison pas encore saisie — à ne pas confondre avec
-    une comparaison jugée d'égale importance, qui vaudrait explicitement 1.
-    C'est le point de départ utilisé pour chaque nouvelle matrice."""
+    les autres cases à 0"""
     return [[1.0 if i == j else 0.0 for j in range(n)] for i in range(n)]
 
 
 def matrice_complete(matrice: Matrice) -> bool:
-    """Vrai si toutes les comparaisons hors diagonale ont été saisies
-    (aucune case à 0, la valeur sentinelle de "non renseigné")."""
+    """Vrai si toutes les comparaisons hors diagonale ont été saisies"""
     n = len(matrice)
     return all(
         matrice[i][j] != 0.0
@@ -56,9 +49,7 @@ def matrice_complete(matrice: Matrice) -> bool:
 
 
 def normaliser_matrice(matrice: Matrice) -> Matrice:
-    """Normalisation de la matrice de Saaty (Figure 20 du mémoire) :
-    āij = aij / Σk akj — chaque valeur est divisée par la somme des
-    valeurs de sa colonne."""
+    """Normalisation de la matrice de Saaty"""
     n = len(matrice)
     sommes_colonnes = [sum(matrice[k][j] for k in range(n)) for j in range(n)]
     return [
@@ -71,8 +62,7 @@ def normaliser_matrice(matrice: Matrice) -> Matrice:
 
 
 def calculer_poids(matrice_normalisee: Matrice) -> List[float]:
-    """Calcul du poids des critères (Figure 21 du mémoire) :
-    wi = (1/n) Σj āij — moyenne des valeurs normalisées de la ligne i."""
+    """Calcul du poids des critères"""
     n = len(matrice_normalisee)
     if n == 0:
         return []
@@ -80,9 +70,6 @@ def calculer_poids(matrice_normalisee: Matrice) -> List[float]:
 
 
 def calculer_lambda_max(matrice: Matrice, poids: List[float]) -> float:
-    """λmax = (1/n) Σ λi, avec V = A × W (vecteur de somme pondérée) et
-    λi = Vi / wi, tel que défini dans la partie "Vérification de la
-    cohérence des jugements" du mémoire."""
     n = len(matrice)
     if n == 0:
         return 0.0
@@ -108,16 +95,14 @@ def calculer_ratio_coherence(matrice: Matrice, poids: List[float]) -> float:
 
 
 def coherence_acceptable(ratio_coherence: float) -> bool:
-    """RC ≤ 10 %, seuil retenu par Saaty et Vargas (2012) et rappelé dans
-    le mémoire comme niveau de cohérence suffisant pour poursuivre
-    l'analyse."""
+    """RC ≤ 10 % (seuil de cohérence) - source : Saaty et Vargas (2012)"""
     return ratio_coherence <= SEUIL_RC_ACCEPTABLE
 
 
 def ponderer_et_calculer(matrice: Matrice) -> Tuple[List[float], float, float]:
     """Enchaîne les 4 étapes du calcul de pondération pour une matrice
     donnée : normalisation, poids, λmax, ratio de cohérence.
-    Retourne (poids, lambda_max, ratio_coherence)."""
+    Retourne le poids des critères, et ratio de cohérence"""
     matrice_normalisee = normaliser_matrice(matrice)
     poids = calculer_poids(matrice_normalisee)
     lambda_max = calculer_lambda_max(matrice, poids)
@@ -126,8 +111,8 @@ def ponderer_et_calculer(matrice: Matrice) -> Tuple[List[float], float, float]:
 
 
 def formater_valeur_saaty(valeur: float) -> str:
-    """Représentation textuelle d'une valeur de l'échelle de Saaty :
-    '3' pour 3.0, '1/5' pour 0.2, etc."""
+    """Représentation sous forme textuelle d'une valeur de l'échelle de Saaty :
+    '3' pour 3.0, '1/5' pour 0.2, etc pour plus de flexibilité au remplissage de la matrice"""
     if valeur >= 1:
         arrondi = round(valeur)
         return str(arrondi) if abs(valeur - arrondi) < 1e-6 else f"{valeur:.2f}"
@@ -136,9 +121,6 @@ def formater_valeur_saaty(valeur: float) -> str:
 
 
 def libelle_saaty(valeur: float, x: str, y: str) -> str:
-    """Formulation simple (colonne 'Formulation simple' de la Figure 10 du
-    mémoire) associée à une valeur de l'échelle, pour les deux éléments
-    comparés x (ligne) et y (colonne)."""
     for v, _, formulation in ECHELLE_SAATY:
         if abs(v - valeur) < 1e-9:
             return formulation.format(x=x, y=y)
