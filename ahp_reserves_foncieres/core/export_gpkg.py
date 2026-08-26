@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-Export de la couche enrichie (étape Résultats et Export).
+Export de la couche des résultats.
 
 Écrit une copie de la couche d'entrée au format GeoPackage, à laquelle
 sont ajoutés :
   - un champ par sous-critère, portant sa valeur standardisée (0 à 1) ;
-  - un champ par famille, portant son score intermédiaire (Mf) ;
-  - le score final (S), la classe de potentiel et le rang.
+  - un champ par famille de critères, portant son score intermédiaire de l'évaluation ;
+  - le score final de l'évaluation, la classe du potentiel de mobilisation (élevé, modéré, faible) et le classement général.
 
 """
 import re
@@ -22,8 +22,8 @@ LONGUEUR_MAX_NOM_CHAMP = 20
 
 
 def _slugifier(texte: str, longueur_max: int) -> str:
-    """Convertit un libellé quelconque (nom de famille) en un nom de champ
-    simple : sans accent, sans espace, en minuscules."""
+    """Conversion du nom de famille édité, en un nom sans accent, sans espace, et en minuscules"""
+  
     texte = unicodedata.normalize("NFKD", texte).encode("ascii", "ignore").decode("ascii")
     texte = re.sub(r"[^A-Za-z0-9]+", "_", texte).strip("_").lower()
     return texte[:longueur_max].strip("_") or "famille"
@@ -45,9 +45,8 @@ def _noms_champs_familles(familles):
 
 
 def exporter_couche_enrichie(layer, familles, id_field, resultats, chemin_sortie):
-    """Écrit la couche enrichie au format GeoPackage.
-
-    Retourne (succes: bool, message: str)."""
+    """Écrit la couche enrichie au format GeoPackage"""
+  
     if layer is None:
         return False, "Aucune couche d'entrée sélectionnée."
     if not chemin_sortie:
